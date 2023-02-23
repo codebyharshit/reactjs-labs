@@ -1,29 +1,31 @@
-import { useState } from 'react';
+import React, {useState, useCallback} from 'react';
+import Button from './components/UI/Button/Button';
 
-import Header from './components/Layout/Header';
-import Meals from './components/Meals/Meals';
-import Cart from './components/Cart/Cart';
-import CartProvider from './store/CartProvider';
+import './App.css';
+import DemoOutput from './components/Demo/DemoOutput';
 
 function App() {
-  const [cartIsShown, setCartIsShown] = useState(false);
+  const [showPara, setShowPara] = useState(false);
+  const [allowToggle, setAllowToggle] = useState(false);
 
-  const showCartHandler = () => {
-    setCartIsShown(true);
-  }
+  const toggleHandler = useCallback(() => {
+    if (allowToggle) {
+      setShowPara((prevShowPara) => !prevShowPara);
+    }
+  }, [allowToggle]);
 
-  const hideCartHandler = () => {
-    setCartIsShown(false);
-  }
- 
+  const allowToggleHandler = () => {
+    setAllowToggle((prevAllow) => !prevAllow);
+  };
+
   return (
-    <CartProvider>
-      {cartIsShown && <Cart onHideClick={hideCartHandler} />}
-      <Header onButtonClick={showCartHandler} />
-      <main>
-        <Meals />
-      </main>
-    </CartProvider>
+    <div className="app">
+      <h1>Hi there!</h1>
+      <DemoOutput show={showPara} />
+      {/* {showPara && <p>This is New Para!</p>} */}
+      <Button onClick={allowToggleHandler}>Allow Toggling</Button>
+      <Button onClick={toggleHandler}>Toggle Change</Button>
+    </div>
   );
 }
 
