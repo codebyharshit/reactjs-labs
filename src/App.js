@@ -1,189 +1,49 @@
-// import Cart from "./components/Cart/Cart";
-// import Layout from "./components/Layout/Layout";
-// import Products from "./components/Shop/Products";
-// import { useSelector, useDispatch } from "react-redux";
-// import { useEffect, Fragment } from "react";
-// import { uiActions } from "./store/ui-slice";
-// import Notification from "./components/UI/Notification";
+// Challenge / Exercise
 
-// let isInitial = true;
+// 1. Add five new (dummy) page components (content can be simple <h1> elements)
+//    - HomePage
+//    - EventsPage
+//    - EventDetailPage
+//    - NewEventPage
+//    - EditEventPage
+// 2. Add routing & route definitions for these five pages
+//    - / => HomePage
+//    - /events => EventsPage
+//    - /events/<some-id> => EventDetailPage
+//    - /events/new => NewEventPage
+//    - /events/<some-id>/edit => EditEventPage
+// 3. Add a root layout that adds the <MainNavigation> component above all page components
+// 4. Add properly working links to the MainNavigation
+// 5. Ensure that the links in MainNavigation receive an "active" class when active
+// 6. Output a list of dummy events to the EventsPage
+//    Every list item should include a link to the respective EventDetailPage
+// 7. Output the ID of the selected event on the EventDetailPage
+// BONUS: Add another (nested) layout route that adds the <EventNavigation> component above all /events... page components
 
-// function App() {
-//   const dispatch = useDispatch();
-//   const showCart = useSelector((state) => state.ui.cartIsVisible);
-//   const cart = useSelector((state) => state.cart);
-//   const notification = useSelector((state) => state.ui.notification);
-  
-//   useEffect(() => {
-//     if(isInitial) { 
-//       isInitial = false; 
-//       return;
-//     }
-//     const sendCartData = async () => {
-//       dispatch(
-//         uiActions.showNotification({
-//           status: "pending",
-//           title: "Sending...",
-//           message: "Sending cart data!",
-//         })
-//       );
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import HomePage from './pages/Home';
+import EventsPage from './pages/Events';
+import EventDetailPage from './pages/EventDetail';
+import NewEventPage from './pages/NewEvent';
+import EditEventPage from './pages/EditEvent';
+import RootLayout from './pages/Root';
+import EventsRootLayout from './pages/EventsRoot';
 
-//       const response = await fetch(
-//         "https://react-http-dd11f-default-rtdb.firebaseio.com/cart.json",
-//         {
-//           method: "PUT",
-//           body: JSON.stringify(cart),
-//         }
-//       );
-
-//       if (!response.ok) {
-//         throw new Error("Sending cart data failed!");
-//       }
-
-//       dispatch(
-//         uiActions.showNotification({
-//           status: "success",
-//           title: "Success!",
-//           message: "Sent cart data successfully!",
-//         })
-//       );
-
-//       // const resposneData = await response.json();
-//     };
-
-
-//     sendCartData().catch((error) => {
-//       dispatch(
-//         uiActions.showNotification({
-//           status: "error",
-//           title: "Error!",
-//           message: "Sending cart data failed!",
-//         })
-//       );
-//     });
-//   }, [cart, dispatch]);
-
-//   return (
-//     <Fragment>
-//       {notification && (
-//         <Notification
-//           status={notification.status}
-//           title={notification.title}
-//           message={notification.message}
-//         />
-//       )}
-//       <Layout>
-//         {showCart && <Cart />}
-//         <Products />
-//       </Layout>
-//     </Fragment>
-//   );
-// }
-
-// export default App;
-
-
-
-// import { Fragment, useEffect } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
-
-// import Cart from './components/Cart/Cart';
-// import Layout from './components/Layout/Layout';
-// import Products from './components/Shop/Products';
-// import Notification from './components/UI/Notification';
-// // import { sendCartData } from './store/cart-slice';
-// import { sendCartData, fetchCartData } from './store/cart-actions';
-
-// let isInitial = true;
-
-// function App() {
-//   const dispatch = useDispatch();
-//   const showCart = useSelector((state) => state.ui.cartIsVisible);
-//   const cart = useSelector((state) => state.cart);
-//   const notification = useSelector((state) => state.ui.notification);
-  
-//   useEffect(() => {
-//     dispatch(fetchCartData())
-//   }, [dispatch]);
-
-//   useEffect(() => {
-//     if (isInitial) {
-//       isInitial = false;
-//       return;
-//     }
-
-//     cart.changed && dispatch(sendCartData(cart));
-
-//   }, [cart, dispatch]);
-
-//   return (
-//     <Fragment>
-//       {notification && (
-//         <Notification
-//           status={notification.status}
-//           title={notification.title}
-//           message={notification.message}
-//         />
-//       )}
-//       <Layout>
-//         {showCart && <Cart />}
-//         <Products />
-//       </Layout>
-//     </Fragment>
-//   );
-// }
-
-// export default App;
-
-
-
-import { Fragment, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
-import Cart from './components/Cart/Cart';
-import Layout from './components/Layout/Layout';
-import Products from './components/Shop/Products';
-import Notification from './components/UI/Notification';
-import { sendCartData, fetchCartData } from './store/cart-actions';
-
-let isInitial = true;
+const router = createBrowserRouter([
+  {path: '/', 
+  element: <RootLayout />, children: [
+    { index: true, element: <HomePage/>},
+    {path: 'events', element: <EventsRootLayout />, children: [
+      { index: true, element: <EventsPage />},
+      {path: ':eventId', element: <EventDetailPage/>},
+      {path: 'new', element: <NewEventPage/>},
+      {path: ':eventId/edit', element: <EditEventPage/>},
+    ]},
+  ]}
+]);
 
 function App() {
-  const dispatch = useDispatch();
-  const showCart = useSelector((state) => state.ui.cartIsVisible);
-  const cart = useSelector((state) => state.cart);
-  const notification = useSelector((state) => state.ui.notification);
-
-  useEffect(() => {
-    dispatch(fetchCartData());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (isInitial) {
-      isInitial = false;
-      return;
-    }
-
-    if (cart.changed) {
-      dispatch(sendCartData(cart));
-    }
-  }, [cart, dispatch]);
-
-  return (
-    <Fragment>
-      {notification && (
-        <Notification
-          status={notification.status}
-          title={notification.title}
-          message={notification.message}
-        />
-      )}
-      <Layout>
-        {showCart && <Cart />}
-        <Products />
-      </Layout>
-    </Fragment>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
